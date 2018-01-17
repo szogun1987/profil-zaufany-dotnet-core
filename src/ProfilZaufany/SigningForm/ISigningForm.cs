@@ -1,7 +1,9 @@
-﻿namespace ProfilZaufany.SigningForm
+﻿using System.Threading.Tasks;
+
+namespace ProfilZaufany.SigningForm
 {
     public interface ISigningForm
     {
-        SigningFormModel BuildFormModel(SigningFormBuildingArguments buildingArguments);
+        Task<SigningFormModel> BuildFormModel(SigningFormBuildingArguments buildingArguments);
     }
 }
