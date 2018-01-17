@@ -1,0 +1,35 @@
+﻿@model ProfilZaufany.TestApp.Models.AuthorizationForm
+
+@{
+    ViewData["Title"] = "Autoryzacja";
+}
+
+<h2>View</h2>
+
+<h4>AuthorizationForm</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="GoToPz" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="SamlIssuer" class="control-label">Pole Issuer w asercji SAML</label>
+                <input asp-for="SamlIssuer" class="form-control" />
+                <span asp-validation-for="SamlIssuer" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Certificate" class="control-label">Plik certyfikatu</label>
+                <input asp-for="Certificate" type="file" accept=".pfx,.p12" />
+                <span asp-validation-for="Certificate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CertificatePassword" class="control-label">Hasło do certyfikatu</label>
+                <input asp-for="CertificatePassword" type="password" class="form-control" />
+                <span asp-validation-for="CertificatePassword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Utwórz formularz" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>

@@ -5,7 +5,7 @@ using ProfilZaufany.Helpers;
 
 namespace ProfilZaufany.SigningForm
 {
-    internal class SigningForm : ISigningForm
+    public class SigningForm : ISigningForm
     {
         private readonly SigningFormSettings _profileSettings;
 
@@ -71,7 +71,7 @@ namespace ProfilZaufany.SigningForm
         {
             var issuer = document.CreateElement("samlp", "Issuer", Saml20Constants.Assertion);
             issuer.InnerText = _profileSettings.SamlIssuer;
-            document.DocumentElement.AppendChild(issuer);
+            document.DocumentElement.PrependChild(issuer);
         }
     }
 }

@@ -1,0 +1,11 @@
+﻿@model ProfilZaufany.SigningForm.SigningFormModel
+
+@{
+    ViewData["Title"] = "GoToPz";
+}
+
+<form action="@Model.FormAction" method="post">
+    @Html.HiddenFor(m => m.SAMLRequest)
+    
+    <button type="submit" class="btn btn-primary btn-block">Przejdź do PZ.gov.pl</button>
+</form>
