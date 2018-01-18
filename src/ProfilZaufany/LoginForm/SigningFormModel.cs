@@ -1,4 +1,4 @@
-﻿namespace ProfilZaufany.SigningForm
+﻿namespace ProfilZaufany.LoginForm
 {
     /// <summary>
     /// Model formularza logowania

@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using ProfilZaufany.SigningForm;
+using ProfilZaufany.LoginForm;
 using ProfilZaufany.TestApp.Helpers;
 using ProfilZaufany.TestApp.Models;
 using ProfilZaufany.X509;
@@ -40,7 +40,7 @@ namespace ProfilZaufany.TestApp.Controllers
 
             _secretsStore.SetSamlIssuer(authorizationForm.SamlIssuer);
 
-            var signingForm = new SigningForm.SigningForm(settings);
+            var signingForm = new SigningForm(settings);
 
             var signingFormModel = await signingForm.BuildFormModel(new SigningFormBuildingArguments
             {
@@ -59,7 +59,7 @@ namespace ProfilZaufany.TestApp.Controllers
                 Environment.Test,
                 samlIssuer,
                 _x509Provider);
-            var signingForm = new SigningForm.SigningForm(settings);
+            var signingForm = new SigningForm(settings);
 
             bool isValid;
             string userName;

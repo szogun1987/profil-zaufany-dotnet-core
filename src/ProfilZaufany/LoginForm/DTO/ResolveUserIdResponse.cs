@@ -1,7 +1,7 @@
 ﻿using System.Xml.Schema;
 using System.Xml.Serialization;
 
-namespace ProfilZaufany.SigningForm.DTO
+namespace ProfilZaufany.LoginForm.DTO
 {
     [XmlRoot(ElementName = "respResolveUserId", Namespace = "http://www.cpi.gov.pl/dt/IdpIdentityInfoServiceSchema")]
     public class ResolveUserIdResponse

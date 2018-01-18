@@ -8,14 +8,14 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using ProfilZaufany.Helpers;
-using ProfilZaufany.SigningForm.DTO;
+using ProfilZaufany.LoginForm.DTO;
 using ProfilZaufany.X509;
 using SimpleSOAPClient;
 using SimpleSOAPClient.BinarySecurityToken;
 using SimpleSOAPClient.Helpers;
 using SimpleSOAPClient.Models;
 
-namespace ProfilZaufany.SigningForm
+namespace ProfilZaufany.LoginForm
 {
     public class SigningForm : ISigningForm
     {

@@ -1,6 +1,6 @@
 ﻿using ProfilZaufany.X509;
 
-namespace ProfilZaufany.SigningForm
+namespace ProfilZaufany.LoginForm
 {
     public class SigningFormSettings
     {
