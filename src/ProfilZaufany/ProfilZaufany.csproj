@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SimpleSOAPClient.BinarySecurityToken" Version="1.0.0" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="4.5.0-preview1-25914-04" />
   </ItemGroup>
 

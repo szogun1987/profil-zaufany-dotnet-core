@@ -4,6 +4,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace ProfilZaufany.Helpers
 {
@@ -24,6 +26,46 @@ namespace ProfilZaufany.Helpers
                 }
             }
         }
+
+        public static XElement ToXElement(this XmlDocument document)
+        {
+            using (var stream = new MemoryStream())
+            {
+                using (XmlWriter xmlWriter = new XmlTextWriter(stream, new UTF8Encoding(false)))
+                {
+                    document.WriteTo(xmlWriter);
+                    xmlWriter.Flush();
+
+                    stream.Position = 0;
+
+                    return XElement.Load(stream);
+                }
+            }
+        }
+
+        public static XElement ToXElement<T>(this T item)
+        {
+            return XElement.Parse(item.ToXmlString());
+        }
+
+        static string ToXmlString<T>(this T item)
+        {
+            if (item == null) return null;
+
+            using (var textWriter = new StringWriter())
+            using (var xmlWriter = XmlWriter.Create(textWriter, new XmlWriterSettings
+            {
+                OmitXmlDeclaration = false,
+                Indent = false,
+                NamespaceHandling = NamespaceHandling.OmitDuplicates
+            }))
+            {
+                new XmlSerializer(item.GetType())
+                    .Serialize(xmlWriter, item);
+                return textWriter.ToString();
+            }
+        }
+
         public static void SignSamlDocument(XmlDocument doc, string id, X509Certificate2 cert)
         {
             var signedXml = new SignedXml(doc);

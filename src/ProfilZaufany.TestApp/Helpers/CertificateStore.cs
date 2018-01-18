@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
 using ProfilZaufany.X509;
 
@@ -21,7 +22,7 @@ namespace ProfilZaufany.TestApp.Helpers
             _certificate2 = certificate2;
         }
 
-        public Task<X509Certificate2> Provide()
+        public Task<X509Certificate2> Provide(CancellationToken token)
         {
             return Task.FromResult(_certificate2);
         }

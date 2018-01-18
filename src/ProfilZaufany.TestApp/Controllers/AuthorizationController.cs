@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ProfilZaufany.SigningForm;
 using ProfilZaufany.TestApp.Models;
@@ -21,7 +22,7 @@ namespace ProfilZaufany.TestApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GoToPz(AuthorizationForm authorizationForm)
+        public async Task<IActionResult> GoToPz(AuthorizationForm authorizationForm, CancellationToken token)
         {
             var settings = new SigningFormSettings(
                 Environment.Test, 
@@ -32,15 +33,30 @@ namespace ProfilZaufany.TestApp.Controllers
             var signingFormModel = await signingForm.BuildFormModel(new SigningFormBuildingArguments
             {
                 AssertionConsumerServiceURL = "http://localhost:64685" + Url.Action("ConsumePzArtifact")
-            });
+            }, token);
+
+            TempData["SAMLIssuer"] = authorizationForm.SamlIssuer;
 
             return View(signingFormModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> ConsumePzArtifact([FromForm(Name = "SAMLArt")] string samlArt)
+        public async Task<IActionResult> ConsumePzArtifact([FromForm(Name = "SAMLArt")] string samlArt, CancellationToken token)
         {
-            return View();
+            string samlIssuer = (string)TempData["SAMLIssuer"];
+
+            var settings = new SigningFormSettings(
+                Environment.Test,
+                samlIssuer,
+                _x509Provider);
+            var signingForm = new SigningForm.SigningForm(settings);
+
+            var isValid = await signingForm.IsArtifactValid(samlArt, token);
+
+            return View(new ConsumePzArtifactViewModel
+            {
+                IsValid = isValid
+            });
         }
     }
 }

@@ -1,9 +1,18 @@
-﻿
+﻿@model ConsumePzArtifactViewModel
+
 @{
-    ViewData["Title"] = "ConsumePzArtifact";
+    ViewData["Title"] = "Odebranie zwrotki z PZ";
 }
 
-<div class="alert alert-success">
-    Zwycięstwo!
-</div>
-
+@if (@Model.IsValid)
+{
+    <div class="alert alert-success">
+        Zwycięstwo!
+    </div>
+}
+else
+{
+    <div class="alert alert-danger">
+        Porażka!
+    </div>
+}
