@@ -16,17 +16,17 @@ namespace ProfilZaufany.SigningForm
         /// <summary>
         /// Metoda weryfikuje czy 
         /// </summary>
-        /// <param name="samlArtifact"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Task<bool> IsArtifactValid(string samlArtifact, CancellationToken token);
-        
+        /// <param name="samlArtifact">Artefakt SAML dostarczony z systemu PZ</param>
+        /// <param name="token">Token anulowania zadania</param>
+        /// <returns>id asercji SAML albo null w przypadku przekazania błędnego tokenu</returns>
+        Task<string> ResolveAsserionId(string samlArtifact, CancellationToken token);
+
         /// <summary>
         /// Dostarcza identyfikator użytkownika na podstawie Artefaktu SAML
         /// </summary>
-        /// <param name="samlArtifact">Artefakt SAML dostarczony pod adres przekazany w polu AssertionConsumerServiceURL do metody BuildFormMOdel</param>
-        /// <param name="token">Token anulowania</param>
+        /// <param name="samlAssertionId">Id asercji zwrócony przez metodę ResolveAssertionId</param>
+        /// <param name="token">Token anulowania zadania</param>
         /// <returns></returns>
-        Task<string> GetUserId(string samlArtifact, CancellationToken token);
+        Task<string> GetUserId(string samlAssertionId, CancellationToken token);
     }
 }

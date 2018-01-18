@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ProfilZaufany.SigningForm;
+using ProfilZaufany.TestApp.Helpers;
 using ProfilZaufany.TestApp.Models;
 using ProfilZaufany.X509;
 
@@ -10,15 +11,23 @@ namespace ProfilZaufany.TestApp.Controllers
     public class AuthorizationController : Controller
     {
         private readonly IX509Provider _x509Provider;
+        private readonly ISecretsStore _secretsStore;
 
-        public AuthorizationController(IX509Provider x509Provider)
+        public AuthorizationController(
+            IX509Provider x509Provider,
+            ISecretsStore secretsStore)
         {
             _x509Provider = x509Provider;
+            _secretsStore = secretsStore;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var form = new AuthorizationForm
+            {
+                SamlIssuer = _secretsStore.GetSamlIssuer()
+            };
+            return View(form);
         }
 
         [HttpPost]
@@ -28,22 +37,23 @@ namespace ProfilZaufany.TestApp.Controllers
                 Environment.Test, 
                 authorizationForm.SamlIssuer, 
                 _x509Provider);
+
+            _secretsStore.SetSamlIssuer(authorizationForm.SamlIssuer);
+
             var signingForm = new SigningForm.SigningForm(settings);
 
             var signingFormModel = await signingForm.BuildFormModel(new SigningFormBuildingArguments
             {
                 AssertionConsumerServiceURL = "http://localhost:64685" + Url.Action("ConsumePzArtifact")
             }, token);
-
-            TempData["SAMLIssuer"] = authorizationForm.SamlIssuer;
-
+            
             return View(signingFormModel);
         }
 
         [HttpPost]
         public async Task<IActionResult> ConsumePzArtifact([FromForm(Name = "SAMLArt")] string samlArt, CancellationToken token)
         {
-            string samlIssuer = (string)TempData["SAMLIssuer"];
+            string samlIssuer = _secretsStore.GetSamlIssuer();
 
             var settings = new SigningFormSettings(
                 Environment.Test,
@@ -51,11 +61,24 @@ namespace ProfilZaufany.TestApp.Controllers
                 _x509Provider);
             var signingForm = new SigningForm.SigningForm(settings);
 
-            var isValid = await signingForm.IsArtifactValid(samlArt, token);
+            bool isValid;
+            string userName;
+            var assertionId = await signingForm.ResolveAsserionId(samlArt, token);
+            if (assertionId != null)
+            {
+                userName = await signingForm.GetUserId(assertionId, token);
+                isValid = true;
+            }
+            else
+            {
+                userName = null;
+                isValid = false;
+            }
 
             return View(new ConsumePzArtifactViewModel
             {
-                IsValid = isValid
+                IsValid = isValid,
+                UserName = userName
             });
         }
     }

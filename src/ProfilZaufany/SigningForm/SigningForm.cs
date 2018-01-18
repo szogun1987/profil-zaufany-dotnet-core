@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -94,16 +93,13 @@ namespace ProfilZaufany.SigningForm
 
         private readonly Random _idGenerator = new Random();
 
-        public async Task<string> GetUserId(string samlArtifact, CancellationToken token)
+        public async Task<string> GetUserId(string samlAssertionId, CancellationToken token)
         {
             var x509Certificate = await _profileSettings.X509Provider.Provide(token);
             
-            var resolveEnvelope = await ResolveArtifact(samlArtifact, x509Certificate, token);
-            
             var userIdReq = new ResolveUserIdRequest
             {
-                // TODO: pobranie ID z elementu assertion
-                AssertionId = ""
+                AssertionId = samlAssertionId
             };
             
             using (var soapClient = SoapClient.Prepare())
@@ -136,18 +132,24 @@ namespace ProfilZaufany.SigningForm
             }
         }
         
-        public async Task<bool> IsArtifactValid(string samlArtifact, CancellationToken token)
+        public async Task<string> ResolveAsserionId(string samlArtifact, CancellationToken token)
         {
             var x509Certificate = await _profileSettings.X509Provider.Provide(token);
 
             var resolveEnvelope = await ResolveArtifact(samlArtifact, x509Certificate, token);
 
             var body = resolveEnvelope.Body.Value;
-            var smth = body.XPathEvaluate("/*[local-name()=\'Status\']/*[local-name()=\'StatusCode\']/@Value");
+            var smth = body.XPathEvaluate("/*[local-name()=\'Response\']/*[local-name()=\'Assertion\']");
+            
+            var assertion = ((IEnumerable)smth).Cast<XElement>().SingleOrDefault();
 
-            var statusCode = ((IEnumerable)smth).Cast<XAttribute>().Single();
+            if (assertion == null)
+            {
+                return null;
+            }
 
-            return string.Equals(statusCode.Value, "urn:oasis:names:tc:SAML:2.0:status:Success", StringComparison.InvariantCultureIgnoreCase);
+            var attribute = assertion.Attribute("ID");
+            return attribute.Value;
         }
 
         private async Task<SoapEnvelope> ResolveArtifact(string samlArtifact, X509Certificate2 x509Certificate, CancellationToken token)

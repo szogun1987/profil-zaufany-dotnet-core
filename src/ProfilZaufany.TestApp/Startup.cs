@@ -21,8 +21,8 @@ namespace ProfilZaufany.TestApp
         {
             services.AddMvc();
 
-            var certificateStore = new CertificateStore();
-            services.AddSingleton<ICertificateStore>(certificateStore);
+            var certificateStore = new SecretsStore();
+            services.AddSingleton<ISecretsStore>(certificateStore);
             services.AddSingleton<IX509Provider>(certificateStore);
         }
 

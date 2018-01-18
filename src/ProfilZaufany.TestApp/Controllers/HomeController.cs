@@ -11,18 +11,18 @@ namespace ProfilZaufany.TestApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ICertificateStore _certificateStore;
+        private readonly ISecretsStore _secretsStore;
 
-        public HomeController(ICertificateStore certificateStore)
+        public HomeController(ISecretsStore secretsStore)
         {
-            _certificateStore = certificateStore;
+            _secretsStore = secretsStore;
         }
 
         public IActionResult Index()
         {
             var viewModel = new IndexViewModel
             {
-                IsCertificatePresent = _certificateStore.Get() != null
+                IsCertificatePresent = _secretsStore.GetCertificate() != null
             };
             return View(viewModel);
         }
@@ -30,7 +30,7 @@ namespace ProfilZaufany.TestApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(IndexViewModel certificateForm)
         {
-            certificateForm.IsCertificatePresent = _certificateStore.Get() != null;
+            certificateForm.IsCertificatePresent = _secretsStore.GetCertificate() != null;
             if (!ModelState.IsValid)
             {
                 return View(certificateForm);
@@ -43,7 +43,7 @@ namespace ProfilZaufany.TestApp.Controllers
                 try
                 {
                     var certificate = new X509Certificate2(certificateBytes, certificateForm.CertificatePassword);
-                    _certificateStore.Set(certificate);
+                    _secretsStore.SetCertificate(certificate);
                     certificateForm.IsCertificatePresent = true;
                 }
                 catch (Exception e)
