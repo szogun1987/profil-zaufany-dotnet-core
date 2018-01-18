@@ -1,0 +1,8 @@
+﻿
+@{
+    ViewData["Title"] = "Podpisano dokument";
+}
+
+<div class="alert alert-success">
+    Podpisano dokument <a href="@Url.Action("DownloadSigned", new { documentId=@Model.DocumentId })">Pobierz podpisany dokument</a>
+</div>

@@ -33,18 +33,16 @@ namespace ProfilZaufany.TestApp.Controllers
         [HttpPost]
         public async Task<IActionResult> GoToPz(AuthorizationForm authorizationForm, CancellationToken token)
         {
-            var settings = new LoginFormSettings(
-                Environment.Test, 
-                authorizationForm.SamlIssuer, 
-                _x509Provider);
-
             _secretsStore.SetSamlIssuer(authorizationForm.SamlIssuer);
 
-            var signingForm = new LoginForm.LoginForm(settings);
+            var signingForm = new LoginForm.LoginForm(
+                Environment.Test,
+                authorizationForm.SamlIssuer,
+                _x509Provider);
 
             var signingFormModel = await signingForm.BuildFormModel(new LoginFormBuildingArguments
             {
-                AssertionConsumerServiceURL = "http://localhost:64685" + Url.Action("ConsumePzArtifact")
+                AssertionConsumerServiceURL = Constants.PublicEndpoint + Url.Action("ConsumePzArtifact")
             }, token);
             
             return View(signingFormModel);
@@ -54,12 +52,11 @@ namespace ProfilZaufany.TestApp.Controllers
         public async Task<IActionResult> ConsumePzArtifact([FromForm(Name = "SAMLArt")] string samlArt, CancellationToken token)
         {
             string samlIssuer = _secretsStore.GetSamlIssuer();
-
-            var settings = new LoginFormSettings(
+            
+            var signingForm = new LoginForm.LoginForm(
                 Environment.Test,
                 samlIssuer,
                 _x509Provider);
-            var signingForm = new LoginForm.LoginForm(settings);
 
             bool isValid;
             string userName;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -19,22 +18,18 @@ namespace ProfilZaufany.LoginForm
 {
     public class LoginForm : ILoginForm
     {
-        private readonly LoginFormSettings _profileSettings;
-        
-        public LoginForm(LoginFormSettings profileSettings)
-        {
-            _profileSettings = profileSettings;
-        }
+        private readonly Environment _environment;
+        private readonly string _samlIssuer;
+        private readonly IX509Provider _x509Provider;
 
         public LoginForm(
             Environment environment,
             string samlIssuer,
             IX509Provider x509Provider)
         {
-            _profileSettings = new LoginFormSettings(
-                environment,
-                samlIssuer,
-                x509Provider);
+            _environment = environment;
+            _samlIssuer = samlIssuer;
+            _x509Provider = x509Provider;
         }
 
         #region Build Form model
@@ -45,8 +40,7 @@ namespace ProfilZaufany.LoginForm
 
         public async Task<LoginFormModel> BuildFormModel(LoginFormBuildingArguments buildingArguments, CancellationToken token)
         {
-            var environmentUri = _profileSettings.Environment.ToUri();
-            var formActionUri = new Uri(environmentUri, "dt/SingleSignOnService");
+            var formActionUri = _environment.GetServiceUri("dt/SingleSignOnService");
 
             var doc = new XmlDocument();
             doc.PreserveWhitespace = true;
@@ -61,7 +55,7 @@ namespace ProfilZaufany.LoginForm
 
             AddIssuer(doc);
 
-            var certificate = await _profileSettings.X509Provider.Provide(token);
+            var certificate = await _x509Provider.Provide(token);
 
             XmlHelpers.SignSamlDocument(doc, rootId, certificate);
 
@@ -90,12 +84,10 @@ namespace ProfilZaufany.LoginForm
         #region GetUserId
 
         private const string ResolveArtifactSkeletonXml = @"<saml2p:ArtifactResolve xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol"" Version=""2.0""></saml2p:ArtifactResolve>";
-
-        private readonly Random _idGenerator = new Random();
-
+        
         public async Task<string> GetUserId(string samlAssertionId, CancellationToken token)
         {
-            var x509Certificate = await _profileSettings.X509Provider.Provide(token);
+            var x509Certificate = await _x509Provider.Provide(token);
             
             var userIdReq = new ResolveUserIdRequest
             {
@@ -104,21 +96,14 @@ namespace ProfilZaufany.LoginForm
             
             using (var soapClient = SoapClient.Prepare())
             {
-                soapClient.OnSoapEnvelopeRequest(async (arguments, cancellationToken) =>
-                {
-                    var bodyElement = arguments.Envelope.Body.Value;
-
-                    bodyElement.Add(new XAttribute("callId", _idGenerator.Next()));
-                    bodyElement.Add(new XAttribute("requestTimestamp", DateTime.Now));
-                });
-
-                soapClient.WithBinarySecurityTokenHeader(x509Certificate);
+                soapClient
+                    .AddCommonHeaders()
+                    .WithBinarySecurityTokenHeader(x509Certificate);
 
                 var envelope = SoapEnvelope.Prepare();
                 envelope.Body(userIdReq.ToXElement());
-
-                var pzUri = _profileSettings.Environment.ToUri();
-                var identityInfoServiceUri = new Uri(pzUri, "dt-services/idpIdentityInfoService");
+                
+                var identityInfoServiceUri = _environment.GetServiceUri("dt-services/idpIdentityInfoService");
 
                 var response2 = await soapClient.SendAsync(
                     identityInfoServiceUri.AbsoluteUri,
@@ -138,7 +123,7 @@ namespace ProfilZaufany.LoginForm
 
         public async Task<string> ResolveAsserionId(string samlArtifact, CancellationToken token)
         {
-            var x509Certificate = await _profileSettings.X509Provider.Provide(token);
+            var x509Certificate = await _x509Provider.Provide(token);
 
             var doc = new XmlDocument();
             doc.PreserveWhitespace = true;
@@ -155,16 +140,16 @@ namespace ProfilZaufany.LoginForm
             doc.DocumentElement.AppendChild(artifact);
             
             XmlHelpers.SignSamlDocument(doc, rootId, x509Certificate);
-
-            var pzUri = _profileSettings.Environment.ToUri();
             
             using (var soapClient = SoapClient.Prepare())
             {
-                soapClient.WithBinarySecurityTokenHeader(x509Certificate);
+                soapClient
+                    .AddCommonHeaders()
+                    .WithBinarySecurityTokenHeader(x509Certificate);
 
                 var envelope = SoapEnvelope.Prepare().Body(doc.ToXElement());
 
-                var artifactResolutionUri = new Uri(pzUri, "dt-services/idpArtifactResolutionService");
+                var artifactResolutionUri = _environment.GetServiceUri("dt-services/idpArtifactResolutionService");
 
                 var response = await soapClient.SendAsync(
                     artifactResolutionUri.AbsoluteUri,
@@ -205,7 +190,7 @@ namespace ProfilZaufany.LoginForm
         private void AddIssuer(XmlDocument document)
         {
             var issuer = document.CreateElement("samlp", "Issuer", Saml20Constants.Assertion);
-            issuer.InnerText = _profileSettings.SamlIssuer;
+            issuer.InnerText = _samlIssuer;
             document.DocumentElement.PrependChild(issuer);
         }
     }

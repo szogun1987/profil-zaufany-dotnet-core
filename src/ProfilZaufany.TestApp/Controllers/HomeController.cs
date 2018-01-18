@@ -36,25 +36,21 @@ namespace ProfilZaufany.TestApp.Controllers
                 return View(certificateForm);
             }
             
-            using (var stream = new MemoryStream())
+            var certificateBytes = await certificateForm.Certificate.ToByteArray();
+            try
             {
-                await certificateForm.Certificate.CopyToAsync(stream);
-                var certificateBytes = stream.ToArray();
-                try
-                {
-                    var certificate = new X509Certificate2(certificateBytes, certificateForm.CertificatePassword);
-                    _secretsStore.SetCertificate(certificate);
-                    certificateForm.IsCertificatePresent = true;
-                }
-                catch (Exception e)
-                {
-                    ModelState.AddModelError(string.Empty, e.Message);
-                }
+                var certificate = new X509Certificate2(certificateBytes, certificateForm.CertificatePassword);
+                _secretsStore.SetCertificate(certificate);
+                certificateForm.IsCertificatePresent = true;
             }
-            
+            catch (Exception e)
+            {
+                ModelState.AddModelError(string.Empty, e.Message);
+            }
+
             return View(certificateForm);
         }
-        
+
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

@@ -4,24 +4,24 @@ namespace ProfilZaufany
 {
     internal static class EnvironmentExtensions
     {
-        private static readonly Uri _productionUri;
+        private static readonly Uri ProductionUri;
 
-        private static readonly Uri _testUri;
+        private static readonly Uri TestUri;
 
         static EnvironmentExtensions()
         {
-            _productionUri = new Uri("https://pz.gov.pl");
-            _testUri = new Uri("https://int.pz.gov.pl");
+            ProductionUri = new Uri("https://pz.gov.pl");
+            TestUri = new Uri("https://int.pz.gov.pl");
         }
 
-        public static Uri ToUri(this Environment environment)
+        public static Uri GetServiceUri(this Environment environment, string serviceAddress)
         {
             switch (environment)
             {
                 case Environment.Production:
-                    return _productionUri;
+                    return new Uri(ProductionUri, serviceAddress);
                 case Environment.Test:
-                    return _testUri;
+                    return new Uri(TestUri, serviceAddress);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(environment), environment, null);
             }

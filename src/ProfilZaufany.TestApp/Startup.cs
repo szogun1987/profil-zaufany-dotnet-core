@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ProfilZaufany.Sign;
 using ProfilZaufany.TestApp.Helpers;
 using ProfilZaufany.X509;
 
@@ -24,6 +25,8 @@ namespace ProfilZaufany.TestApp
             var certificateStore = new SecretsStore();
             services.AddSingleton<ISecretsStore>(certificateStore);
             services.AddSingleton<IX509Provider>(certificateStore);
+
+            services.AddScoped<ISigningService>(provider => new SigningService(Environment.Test, provider.GetService<IX509Provider>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

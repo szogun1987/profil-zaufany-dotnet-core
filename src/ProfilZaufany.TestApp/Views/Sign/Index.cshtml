@@ -1,7 +1,25 @@
-﻿
+﻿@model DocumentToSignViewModel
+
 @{
     ViewData["Title"] = "Podpis cyfrowy";
 }
 
-<h2>Index</h2>
+<form asp-action="Index" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="DocumentToSign" class="control-label">Dokument do podpisania</label>
+        <input asp-for="DocumentToSign" type="file" />
+        <span asp-validation-for="DocumentToSign" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="AdditionalInfo" class="control-label">Dodatkowe info</label>
+        <input asp-for="AdditionalInfo" class="form-control" />
+        <span asp-validation-for="AdditionalInfo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Podpisz" class="btn btn-default" />
+    </div>
+</form>
 
