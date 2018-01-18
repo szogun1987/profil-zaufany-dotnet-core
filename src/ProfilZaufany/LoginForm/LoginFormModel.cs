@@ -3,7 +3,7 @@
     /// <summary>
     /// Model formularza logowania
     /// </summary>
-    public class SigningFormModel
+    public class LoginFormModel
     {
         /// <summary>
         /// Wartość pola &quot;action&quot; elementu form

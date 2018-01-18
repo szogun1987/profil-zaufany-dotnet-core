@@ -1,6 +1,6 @@
 ﻿namespace ProfilZaufany.LoginForm
 {
-    public class SigningFormBuildingArguments
+    public class LoginFormBuildingArguments
     {
         /// <summary>
         /// Adres url pod który zostanie dostarczony artefakt SAML

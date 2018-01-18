@@ -17,21 +17,21 @@ using SimpleSOAPClient.Models;
 
 namespace ProfilZaufany.LoginForm
 {
-    public class SigningForm : ISigningForm
+    public class LoginForm : ILoginForm
     {
-        private readonly SigningFormSettings _profileSettings;
+        private readonly LoginFormSettings _profileSettings;
         
-        public SigningForm(SigningFormSettings profileSettings)
+        public LoginForm(LoginFormSettings profileSettings)
         {
             _profileSettings = profileSettings;
         }
 
-        public SigningForm(
+        public LoginForm(
             Environment environment,
             string samlIssuer,
             IX509Provider x509Provider)
         {
-            _profileSettings = new SigningFormSettings(
+            _profileSettings = new LoginFormSettings(
                 environment,
                 samlIssuer,
                 x509Provider);
@@ -43,7 +43,7 @@ namespace ProfilZaufany.LoginForm
   <samlp:NameIDPolicy AllowCreate=""true"" Format=""urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"" />
 </samlp:AuthnRequest>";
 
-        public async Task<SigningFormModel> BuildFormModel(SigningFormBuildingArguments buildingArguments, CancellationToken token)
+        public async Task<LoginFormModel> BuildFormModel(LoginFormBuildingArguments buildingArguments, CancellationToken token)
         {
             var environmentUri = _profileSettings.Environment.ToUri();
             var formActionUri = new Uri(environmentUri, "dt/SingleSignOnService");
@@ -65,14 +65,14 @@ namespace ProfilZaufany.LoginForm
 
             XmlHelpers.SignSamlDocument(doc, rootId, certificate);
 
-            return new SigningFormModel
+            return new LoginFormModel
             {
                 FormAction = formActionUri.AbsoluteUri,
                 SAMLRequest = doc.ToBase64String()
             };
         }
         
-        private void AddRootAttributes(XmlDocument document, Uri formActionUri, SigningFormBuildingArguments arguments)
+        private void AddRootAttributes(XmlDocument document, Uri formActionUri, LoginFormBuildingArguments arguments)
         {
             var root = document.DocumentElement;
 

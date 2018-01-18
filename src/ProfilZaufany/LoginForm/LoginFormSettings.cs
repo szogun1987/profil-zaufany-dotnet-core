@@ -2,7 +2,7 @@
 
 namespace ProfilZaufany.LoginForm
 {
-    public class SigningFormSettings
+    public class LoginFormSettings
     {
         /// <summary>
         /// Tworzy nową instancję parametrów obiektu signing form
@@ -10,7 +10,7 @@ namespace ProfilZaufany.LoginForm
         /// <param name="environment">Środowisko PZ</param>
         /// <param name="samlIssuer">Wartość elementu Issuer z wniosku o przyznanie crtyfikatu</param>
         /// <param name="x509Provider">Dostawca certyfikatu do podpisu komunikacji z systemem PZ</param>
-        public SigningFormSettings(
+        public LoginFormSettings(
             Environment environment, 
             string samlIssuer, 
             IX509Provider x509Provider)
