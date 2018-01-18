@@ -48,5 +48,36 @@ namespace ProfilZaufany.Sign
                 return response.AddDocumentToSigningReturn;
             }
         }
+
+        public async Task<byte[]> GetSignedDocument(string documentId, CancellationToken token)
+        {
+            var certificate = await _x509Provider.Provide(token);
+            using (var client = SoapClient
+                .Prepare())
+            {
+                client
+                    .AddCommonHeaders()
+                    .WithBinarySecurityTokenHeader(certificate);
+
+                var request = new GetSignedDocumentRequest
+                {
+                    Id = documentId
+                };
+
+                var envelope = SoapEnvelope
+                    .Prepare()
+                    .Body(request.ToXElement());
+
+                var soapResponse = await client.SendAsync(
+                    _signingServiceUri.AbsoluteUri,
+                    "getSignedDocument",
+                    envelope,
+                    token);
+
+                var response = soapResponse.Body<GetSignedDocumentResponse>();
+
+                return response.SignedDocumentReturn;
+            }
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace ProfilZaufany.TestApp.Controllers
     public class SignController : Controller
     {
         private readonly ISigningService _signingService;
-        private ConcurrentDictionary<Guid, string> _documentInfoRepository = new ConcurrentDictionary<Guid, string>();
+        private static ConcurrentDictionary<Guid, string> _documentInfoRepository = new ConcurrentDictionary<Guid, string>();
 
         public SignController(
             ISigningService signingService)
@@ -62,20 +62,27 @@ namespace ProfilZaufany.TestApp.Controllers
         
         public IActionResult OnSignSuccess([FromQuery] Guid documentId)
         {
-            return View(new
+            return View(new SignedDocumentInfo
             {
-                DocumentId = documentId
+                Id = documentId
             });
         }
 
-        public IActionResult DownloadSigned([FromQuery] Guid documentId)
+        public async Task<IActionResult> DownloadSigned([FromQuery] Guid documentId, CancellationToken token)
         {
-            return View();
+            if (!_documentInfoRepository.TryGetValue(documentId, out string documentUrl))
+            {
+                return BadRequest();
+            }
+
+            var document = await _signingService.GetSignedDocument(documentUrl, token);
+
+            return File(document, "application/xml", "singed.xml");
         }
 
         public IActionResult OnSignFailure([FromQuery] Guid documentId)
         {
-            _documentInfoRepository.TryRemove(documentId, out string documenKey);
+            _documentInfoRepository.TryRemove(documentId, out string _);
             return View();
         }
     }
