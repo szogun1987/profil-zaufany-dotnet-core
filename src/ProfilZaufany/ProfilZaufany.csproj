@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Wojciech Gomoła</Authors>
+    <Company>Szogun Usługi Informatyczne - Wojciech Gomoła</Company>
+    <Description>Biblioteka ułatwiająca integrację z Profilem zaufanym</Description>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
