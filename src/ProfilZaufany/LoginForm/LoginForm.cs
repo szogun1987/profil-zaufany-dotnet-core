@@ -87,7 +87,7 @@ namespace ProfilZaufany.LoginForm
 
         #endregion
 
-        #region Saml artifact proceed
+        #region GetUserId
 
         private const string ResolveArtifactSkeletonXml = @"<saml2p:ArtifactResolve xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol"" Version=""2.0""></saml2p:ArtifactResolve>";
 
@@ -131,29 +131,15 @@ namespace ProfilZaufany.LoginForm
                 return userIdResp.UserId;
             }
         }
-        
+
+        #endregion
+
+        #region ResolveAsserionId
+
         public async Task<string> ResolveAsserionId(string samlArtifact, CancellationToken token)
         {
             var x509Certificate = await _profileSettings.X509Provider.Provide(token);
 
-            var resolveEnvelope = await ResolveArtifact(samlArtifact, x509Certificate, token);
-
-            var body = resolveEnvelope.Body.Value;
-            var smth = body.XPathEvaluate("/*[local-name()=\'Response\']/*[local-name()=\'Assertion\']");
-            
-            var assertion = ((IEnumerable)smth).Cast<XElement>().SingleOrDefault();
-
-            if (assertion == null)
-            {
-                return null;
-            }
-
-            var attribute = assertion.Attribute("ID");
-            return attribute.Value;
-        }
-
-        private async Task<SoapEnvelope> ResolveArtifact(string samlArtifact, X509Certificate2 x509Certificate, CancellationToken token)
-        {
             var doc = new XmlDocument();
             doc.PreserveWhitespace = true;
             doc.LoadXml(ResolveArtifactSkeletonXml);
@@ -186,7 +172,18 @@ namespace ProfilZaufany.LoginForm
                     envelope,
                     token);
 
-                return response;
+                var body = response.Body.Value;
+                var smth = body.XPathEvaluate("/*[local-name()=\'Response\']/*[local-name()=\'Assertion\']");
+
+                var assertion = ((IEnumerable)smth).Cast<XElement>().SingleOrDefault();
+
+                if (assertion == null)
+                {
+                    return null;
+                }
+
+                var attribute = assertion.Attribute("ID");
+                return attribute.Value;
             }
         }
 
