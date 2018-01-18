@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using ProfilZaufany.Sign;
 using ProfilZaufany.TestApp.Helpers;
 using ProfilZaufany.TestApp.Models;
-using ProfilZaufany.X509;
 
 namespace ProfilZaufany.TestApp.Controllers
 {
@@ -48,10 +47,8 @@ namespace ProfilZaufany.TestApp.Controllers
                     FailureUrl = Constants.PublicEndpoint + Url.Action("OnSignFailure", new { documentId }),
                 };
 
-                var response = await _signingService.AddDocumentToSign(request, token);
-
-                var signingUrl = response.AddDocumentToSigningReturn;
-
+                var signingUrl = await _signingService.AddDocumentToSign(request, token);
+                
                 _documentInfoRepository.TryAdd(documentId, signingUrl);
 
                 return Redirect(signingUrl);

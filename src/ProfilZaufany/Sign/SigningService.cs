@@ -23,7 +23,7 @@ namespace ProfilZaufany.Sign
             _x509Provider = x509Provider;
         }
 
-        public async Task<AddDocumentToSigningResponse> AddDocumentToSign(AddDocumentToSigningRequest request, CancellationToken token)
+        public async Task<string> AddDocumentToSign(AddDocumentToSigningRequest request, CancellationToken token)
         {
             var certificate = await _x509Provider.Provide(token);
             using (var client = SoapClient
@@ -43,7 +43,9 @@ namespace ProfilZaufany.Sign
                     envelope,
                     token);
 
-                return soapResponse.Body<AddDocumentToSigningResponse>();
+                var response = soapResponse.Body<AddDocumentToSigningResponse>();
+
+                return response.AddDocumentToSigningReturn;
             }
         }
     }
