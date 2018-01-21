@@ -6,6 +6,9 @@
     <Company>Szogun Usługi Informatyczne - Wojciech Gomoła</Company>
     <Description>Biblioteka ułatwiająca integrację z Profilem zaufanym</Description>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageLicenseUrl>https://github.com/szogun1987/profil-zaufany-dotnet-core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/szogun1987/profil-zaufany-dotnet-core</PackageProjectUrl>
+    <Version>1.0.0-alpha</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -144,7 +144,8 @@ namespace ProfilZaufany.LoginForm
             using (var soapClient = SoapClient.Prepare())
             {
                 soapClient
-                    .AddCommonHeaders()
+                    // Ta operacja nie lubi wspólnych nagłówków
+                    //.AddCommonHeaders()
                     .WithBinarySecurityTokenHeader(x509Certificate);
 
                 var envelope = SoapEnvelope.Prepare().Body(doc.ToXElement());
