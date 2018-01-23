@@ -1,0 +1,1 @@
+This project uses [SimpleSOAPClient.BinarySecurityToken](https://github.com/szogun1987/SimpleSOAPClient.BinarySecurityToken) with all it's dependencies. Esspecially [SimpleSOAPClient available in here](https://github.com/gravity00/SimpleSOAPClient/) with all its dependencies.
