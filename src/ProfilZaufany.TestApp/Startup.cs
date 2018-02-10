@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProfilZaufany.Sign;
 using ProfilZaufany.TestApp.Helpers;
+using ProfilZaufany.UserInfo;
 using ProfilZaufany.X509;
 
 namespace ProfilZaufany.TestApp
@@ -27,6 +28,7 @@ namespace ProfilZaufany.TestApp
             services.AddSingleton<IX509Provider>(certificateStore);
 
             services.AddScoped<ISigningService>(provider => new SigningService(Environment.Test, provider.GetService<IX509Provider>()));
+            services.AddScoped<IUserInfoService>(provider => new UserInfoService(Environment.Test, provider.GetService<IX509Provider>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

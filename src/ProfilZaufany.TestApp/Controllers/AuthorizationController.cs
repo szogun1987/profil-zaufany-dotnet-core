@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProfilZaufany.LoginForm;
 using ProfilZaufany.TestApp.Helpers;
 using ProfilZaufany.TestApp.Models;
+using ProfilZaufany.UserInfo;
 using ProfilZaufany.X509;
 
 namespace ProfilZaufany.TestApp.Controllers
@@ -12,13 +13,16 @@ namespace ProfilZaufany.TestApp.Controllers
     {
         private readonly IX509Provider _x509Provider;
         private readonly ISecretsStore _secretsStore;
+        private readonly IUserInfoService _userInfoService;
 
         public AuthorizationController(
             IX509Provider x509Provider,
-            ISecretsStore secretsStore)
+            ISecretsStore secretsStore,
+            IUserInfoService userInfoService)
         {
             _x509Provider = x509Provider;
             _secretsStore = secretsStore;
+            _userInfoService = userInfoService;
         }
 
         public IActionResult Index()
@@ -63,7 +67,8 @@ namespace ProfilZaufany.TestApp.Controllers
             var assertionId = await signingForm.ResolveAsserionId(samlArt, token);
             if (assertionId != null)
             {
-                userName = await signingForm.GetUserId(assertionId, token);
+                var info = await _userInfoService.GetUserInfo(assertionId, token);
+                userName = info.AccountEmailAddress;
                 isValid = true;
             }
             else

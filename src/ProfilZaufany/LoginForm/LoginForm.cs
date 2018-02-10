@@ -7,7 +7,6 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using ProfilZaufany.Helpers;
-using ProfilZaufany.LoginForm.DTO;
 using ProfilZaufany.X509;
 using SimpleSOAPClient;
 using SimpleSOAPClient.BinarySecurityToken;
@@ -81,45 +80,9 @@ namespace ProfilZaufany.LoginForm
 
         #endregion
 
-        #region GetUserId
+        #region ResolveAsserionId
 
         private const string ResolveArtifactSkeletonXml = @"<saml2p:ArtifactResolve xmlns:saml2p=""urn:oasis:names:tc:SAML:2.0:protocol"" Version=""2.0""></saml2p:ArtifactResolve>";
-        
-        public async Task<string> GetUserId(string samlAssertionId, CancellationToken token)
-        {
-            var x509Certificate = await _x509Provider.Provide(token);
-            
-            var userIdReq = new ResolveUserIdRequest
-            {
-                AssertionId = samlAssertionId
-            };
-            
-            using (var soapClient = SoapClient.Prepare())
-            {
-                soapClient
-                    .AddCommonHeaders()
-                    .WithBinarySecurityTokenHeader(x509Certificate);
-
-                var envelope = SoapEnvelope.Prepare();
-                envelope.Body(userIdReq.ToXElement());
-                
-                var identityInfoServiceUri = _environment.GetServiceUri("dt-services/idpIdentityInfoService");
-
-                var response2 = await soapClient.SendAsync(
-                    identityInfoServiceUri.AbsoluteUri,
-                    "ResolveUserId",
-                    envelope,
-                    token);
-
-                var userIdResp = response2.Body<ResolveUserIdResponse>();
-
-                return userIdResp.UserId;
-            }
-        }
-
-        #endregion
-
-        #region ResolveAsserionId
 
         public async Task<string> ResolveAsserionId(string samlArtifact, CancellationToken token)
         {

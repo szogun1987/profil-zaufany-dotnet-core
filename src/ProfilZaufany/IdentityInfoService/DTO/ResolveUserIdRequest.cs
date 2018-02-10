@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace ProfilZaufany.LoginForm.DTO
+namespace ProfilZaufany.IdentityInfoService.DTO
 {
     [XmlRoot(ElementName = "reqResolveUserId", Namespace = "http://www.cpi.gov.pl/dt/IdpIdentityInfoServiceSchema")]
     public class ResolveUserIdRequest

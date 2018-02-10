@@ -20,13 +20,5 @@ namespace ProfilZaufany.LoginForm
         /// <param name="token">Token anulowania zadania</param>
         /// <returns>id asercji SAML albo null w przypadku przekazania błędnego tokenu</returns>
         Task<string> ResolveAsserionId(string samlArtifact, CancellationToken token);
-
-        /// <summary>
-        /// Dostarcza identyfikator użytkownika na podstawie Artefaktu SAML
-        /// </summary>
-        /// <param name="samlAssertionId">Id asercji zwrócony przez metodę ResolveAssertionId</param>
-        /// <param name="token">Token anulowania zadania</param>
-        /// <returns></returns>
-        Task<string> GetUserId(string samlAssertionId, CancellationToken token);
     }
 }
