@@ -10,6 +10,6 @@
     <Version>1.0.3-alpha</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SimpleSOAPClient.BinarySecurityToken" Version="1.0.2-alpha" />
+    <PackageReference Include="SimpleSOAPClient.BinarySecurityToken" Version="1.0.3-alpha" />
   </ItemGroup>
 </Project>
