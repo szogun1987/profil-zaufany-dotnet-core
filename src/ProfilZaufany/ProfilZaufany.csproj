@@ -6,6 +6,7 @@
     <Description>Biblioteka ułatwiająca integrację z Profilem zaufanym</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl>https://github.com/szogun1987/profil-zaufany-dotnet-core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/szogun1987/profil-zaufany-dotnet-core/master/src/ProfilZaufany/Logo.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/szogun1987/profil-zaufany-dotnet-core</PackageProjectUrl>
     <Version>1.0.3-alpha</Version>
   </PropertyGroup>
