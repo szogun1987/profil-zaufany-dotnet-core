@@ -71,11 +71,11 @@ namespace ProfilZaufany.Helpers
             var signedXml = new SignedXml(doc);
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
             signedXml.SigningKey = cert.PrivateKey;
-            signedXml.SignedInfo.SignatureMethod = "http://www.w3.org/2000/09/xmldsig#rsa-sha1";
+            signedXml.SignedInfo.SignatureMethod = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
 
             // Retrieve the value of the "ID" attribute on the root assertion element.
             var reference = new Reference("#" + id);
-            reference.DigestMethod = "http://www.w3.org/2000/09/xmldsig#sha1";
+            reference.DigestMethod = "http://www.w3.org/2001/04/xmlenc#sha256";
 
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             reference.AddTransform(new XmlDsigExcC14NTransform());
